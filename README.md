@@ -15,7 +15,8 @@ A quite simple Wrapper for Fast Flags.
 int main(int argc, char const *argv[])
 {
     // Read a value from ClientAppSettings.json
-    printf("The value of DFIntTaskSchedulerTargetFps is %s", FFlags::Read("DFIntTaskSchedulerTargetFps"));
+    std::string value = FFlags::Read("DFIntTaskSchedulerTargetFps");
+    printf("The value of DFIntTaskSchedulerTargetFps is %s", value);
 
     // Write a value in ClientAppSettings.json
     std::string fps_cap = "999";
