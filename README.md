@@ -1,5 +1,6 @@
 # fflag-wrapper
-A quite simple Wrapper for Fast Flags.
+A quite simple Wrapper for Fast Flags.\
+Compatible with Bloxstrap, automatically calculates the game directories.
 
 ## Requirements
 - [nlohmann/json](https://github.com/nlohmann/json)
@@ -33,3 +34,7 @@ int main(int argc, char const *argv[])
 }
 
 ```
+<hr/>
+
+If you use this, please give a little credit in your project.\
+— Made with love by Excel. <3
