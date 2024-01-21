@@ -14,7 +14,7 @@
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 
 #define AUTOCREATE_JSON_FILE
-//#define ALLOW_BLOXSTRAP
+#define ALLOW_BLOXSTRAP
 
 #include <Windows.h>
 #include <iostream>
