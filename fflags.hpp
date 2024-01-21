@@ -60,12 +60,10 @@ namespace FFlags {
             }
 
             else {
-                std::cerr << "Error al convertir el path a formato estrecho." << std::endl;
                 return "";
             }
         }
         else {
-            std::cerr << "Error al obtener el folder path del usuario." << std::endl;
             return "";
         }
     }
