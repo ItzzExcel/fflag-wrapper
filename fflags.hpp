@@ -5,7 +5,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Written by Excel. FFlag-Wrapper under the MIT License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- * https://github.com/ItzzExcel/FFlag-Wrapper/
+ * https://github.com/ItzzExcel/fflag-wrapper/
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Yes, it's that simple.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
