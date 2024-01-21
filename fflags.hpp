@@ -1,0 +1,204 @@
+﻿/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ * ░▒█▀▀▀░▒█▀▀▀░█░░█▀▀▄░█▀▀▀░░░▒█░░▒█░█▀▀▄░█▀▀▄░▄▀▀▄░▄▀▀▄░█▀▀░█▀▀▄
+ * ░▒█▀▀░░▒█▀▀░░█░░█▄▄█░█░▀▄░░░▒█▒█▒█░█▄▄▀░█▄▄█░█▄▄█░█▄▄█░█▀▀░█▄▄▀
+ * ░▒█░░░░▒█░░░░▀▀░▀░░▀░▀▀▀▀░░░▒▀▄▀▄▀░▀░▀▀░▀░░▀░█░░░░█░░░░▀▀▀░▀░▀▀
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ * Written by Excel. FFlag-Wrapper under the MIT License.
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ * https://github.com/ItzzExcel/FFlag-Wrapper/
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ * Yes, it's that simple.
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ */
+
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+
+#define AUTOCREATE_JSON_FILE
+#define ALLOW_BLOXSTRAP
+
+#include <Windows.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <atlstr.h>
+#include <shlobj.h>
+
+#if __cplusplus < 201703L
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <filesystem>
+namespace fs = std::experimental::filesystem;
+#endif
+
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
+
+namespace FFlags {
+
+    bool __DirectoryExists(const std::string folderPath) {
+        DWORD attributes = GetFileAttributesA(folderPath.c_str());
+
+        if (attributes != INVALID_FILE_ATTRIBUTES && (attributes & FILE_ATTRIBUTE_DIRECTORY)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    std::string __GetUserFolderPath() {
+        wchar_t path[MAX_PATH];
+        if (SHGetFolderPathW(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
+            size_t convertedChars = 0;
+            char narrowPath[MAX_PATH] = { NULL };
+
+            if (wcstombs_s(&convertedChars, narrowPath, path, MAX_PATH) == 0) {
+                return std::string(narrowPath);
+            }
+
+            else {
+                std::cerr << "Error al convertir el path a formato estrecho." << std::endl;
+                return "";
+            }
+        }
+        else {
+            std::cerr << "Error al obtener el folder path del usuario." << std::endl;
+            return "";
+        }
+    }
+
+    bool __IsFile(const std::string filePath) {
+        DWORD attributes = GetFileAttributesA(filePath.c_str());
+
+        if (attributes != INVALID_FILE_ATTRIBUTES && !(attributes & FILE_ATTRIBUTE_DIRECTORY))
+            return true;
+        else
+            return false;
+    }
+
+    bool __DoFile(const std::string filePath, const std::string content) {
+        try {
+            std::ofstream outFile(filePath);
+
+            if (outFile.is_open()) {
+                outFile << content;
+                outFile.close();
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (const std::exception& ex) {
+            std::cerr << "Error: " << ex.what() << std::endl;
+            return false;
+        }
+    }
+
+    std::string __GetRobloxFolder() {
+#ifdef ALLOW_BLOXSTRAP
+        std::string bloxstrapPath = __GetUserFolderPath() + "\\AppData\\Local\\Bloxstrap\\Modifications\\ClientSettings";
+        if (__DirectoryExists(bloxstrapPath))
+            return bloxstrapPath;
+#endif
+        std::string robloxPath = __GetUserFolderPath() + "\\AppData\\Local\\Roblox\\ClientSettings";
+        if (__DirectoryExists(robloxPath)) {
+            return robloxPath;
+        }
+        return "\0";
+    }
+
+    /* - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+    bool Write(std::string FFlag, std::string Value) {
+        std::string filePath = __GetRobloxFolder() + "\\ClientAppSettings.json";
+
+        try {
+            json jsonData;
+
+#ifdef AUTOCREATE_JSON_FILE
+            if (!__IsFile(filePath))
+                __DoFile(filePath, "{}");
+#endif
+
+            std::ifstream inputFile(filePath);
+            inputFile >> jsonData;
+            inputFile.close();
+
+            jsonData[FFlag] = Value;
+
+            std::ofstream outputFile(filePath);
+            outputFile << std::setw(2) << jsonData << std::endl;
+            outputFile.close();
+
+            return true;
+        }
+        catch (const std::exception& ex) {
+            throw std::runtime_error("Error updating file: " + std::string(ex.what()));
+        }
+    }
+
+    std::string Read(std::string FFlag) {
+        std::string filePath = __GetRobloxFolder() + "\\ClientAppSettings.json";
+
+        #ifdef AUTOCREATE_JSON_FILE
+                if (!__IsFile(filePath))
+                    __DoFile(filePath, "{}");
+        #endif
+
+        try {
+            std::ifstream inputFile(filePath);
+            json jsonData;
+            inputFile >> jsonData;
+            inputFile.close();
+
+            if (jsonData.contains(FFlag)) {
+                return jsonData[FFlag].get<std::string>();
+            }
+            else {
+                return "null";
+            }
+        }
+        catch (const std::exception& ex) {
+            std::cerr << "Error:\t" << ex.what() << std::endl;
+            return "null";
+        }
+    }
+
+    bool Delete(std::string FFlag) {
+        std::string filePath = __GetRobloxFolder() + "\\ClientAppSettings.json";
+
+        #ifdef AUTOCREATE_JSON_FILE
+                if (!__IsFile(filePath))
+                    __DoFile(filePath, "{}");
+        #endif
+
+        try {
+            std::ifstream inputFile(filePath);
+            json jsonData;
+            inputFile >> jsonData;
+            inputFile.close();
+
+            if (jsonData.contains(FFlag)) {
+                jsonData.erase(FFlag);
+
+                std::ofstream outputFile(filePath);
+                outputFile << std::setw(2) << jsonData << std::endl;
+                outputFile.close();
+
+                return true;
+            }
+            else {
+                std::cerr << "Error: The value does not exist." << std::endl;
+                return false;
+            }
+        }
+        catch (const std::exception& ex) {
+            std::cerr << "Error:\t" << ex.what() << std::endl;
+            return false;
+        }
+    }
+}
