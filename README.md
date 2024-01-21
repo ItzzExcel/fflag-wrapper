@@ -2,6 +2,8 @@
 A quite simple Wrapper for Fast Flags.\
 Compatible with Bloxstrap, automatically calculates the game directories.
 
+The header does not follow best practices, you are absolutely right if you don't like my code.
+
 ## Requirements
 - [nlohmann/json](https://github.com/nlohmann/json)
   - You can install this with vcpkg if you're using a Visual Studio enviroment.
