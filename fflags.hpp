@@ -1,11 +1,11 @@
-﻿/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * ░▒█▀▀▀░▒█▀▀▀░█░░█▀▀▄░█▀▀▀░░░▒█░░▒█░█▀▀▄░█▀▀▄░▄▀▀▄░▄▀▀▄░█▀▀░█▀▀▄
  * ░▒█▀▀░░▒█▀▀░░█░░█▄▄█░█░▀▄░░░▒█▒█▒█░█▄▄▀░█▄▄█░█▄▄█░█▄▄█░█▀▀░█▄▄▀
  * ░▒█░░░░▒█░░░░▀▀░▀░░▀░▀▀▀▀░░░▒▀▄▀▄▀░▀░▀▀░▀░░▀░█░░░░█░░░░▀▀▀░▀░▀▀
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Written by Excel. FFlag-Wrapper under the MIT License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- * https://github.com/ItzzExcel/fflag-wrapper/
+ * https://github.com/ItzzExcel/FFlag-Wrapper/
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Yes, it's that simple.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -14,7 +14,7 @@
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 
 #define AUTOCREATE_JSON_FILE
-#define ALLOW_BLOXSTRAP
+//#define ALLOW_BLOXSTRAP
 
 #include <Windows.h>
 #include <iostream>
@@ -29,7 +29,7 @@
 namespace fs = std::experimental::filesystem;
 #else
 #include <filesystem>
-namespace fs = std::filesystem;
+namespace fs = std::experimental::filesystem;
 #endif
 
 #include <nlohmann/json.hpp>
@@ -96,15 +96,36 @@ namespace FFlags {
         }
     }
 
+    bool __DoDirectory(const std::string& path) {
+        if (CreateDirectoryA(path.c_str(), NULL) == 0) {
+            DWORD error = GetLastError();
+            if (error == ERROR_ALREADY_EXISTS) {
+                return true;
+            }
+            else {
+                std::cerr << "Error: Failed to create directory. Error code: " << error << std::endl;
+                return false;
+            }
+        }
+        else {
+            return true;
+        }
+    }
+
     std::string __GetRobloxFolder() {
 #ifdef ALLOW_BLOXSTRAP
         std::string bloxstrapPath = __GetUserFolderPath() + "\\AppData\\Local\\Bloxstrap\\Modifications\\ClientSettings";
         if (__DirectoryExists(bloxstrapPath))
             return bloxstrapPath;
 #endif
-        std::string robloxPath = __GetUserFolderPath() + "\\AppData\\Local\\Roblox\\ClientSettings";
-        if (__DirectoryExists(robloxPath)) {
-            return robloxPath;
+        std::string robloxPath = __GetUserFolderPath() + "\\AppData\\Local\\Roblox\\Versions";
+
+        if (fs::exists(robloxPath) && fs::is_directory(robloxPath)) {
+            for (const auto& entry : fs::directory_iterator(robloxPath)) {
+                if (fs::is_directory(entry.path()) && fs::exists(entry.path() / "RobloxPlayerBeta.exe")) {
+                    return entry.path().string() + "\\ClientSettings";
+                }
+            }
         }
         return "\0";
     }
@@ -118,6 +139,9 @@ namespace FFlags {
             json jsonData;
 
 #ifdef AUTOCREATE_JSON_FILE
+            if (!__DirectoryExists(__GetRobloxFolder()))
+                __DoDirectory(__GetRobloxFolder());
+
             if (!__IsFile(filePath))
                 __DoFile(filePath, "{}");
 #endif
@@ -142,10 +166,13 @@ namespace FFlags {
     std::string Read(std::string FFlag) {
         std::string filePath = __GetRobloxFolder() + "\\ClientAppSettings.json";
 
-        #ifdef AUTOCREATE_JSON_FILE
-                if (!__IsFile(filePath))
-                    __DoFile(filePath, "{}");
-        #endif
+#ifdef AUTOCREATE_JSON_FILE
+        if (!__DirectoryExists(__GetRobloxFolder()))
+            __DoDirectory(__GetRobloxFolder());
+
+        if (!__IsFile(filePath))
+            __DoFile(filePath, "{}");
+#endif
 
         try {
             std::ifstream inputFile(filePath);
@@ -170,8 +197,11 @@ namespace FFlags {
         std::string filePath = __GetRobloxFolder() + "\\ClientAppSettings.json";
 
         #ifdef AUTOCREATE_JSON_FILE
-                if (!__IsFile(filePath))
-                    __DoFile(filePath, "{}");
+        if (!__DirectoryExists(__GetRobloxFolder()))
+            __DoDirectory(__GetRobloxFolder());
+
+        if (!__IsFile(filePath))
+            __DoFile(filePath, "{}");
         #endif
 
         try {
