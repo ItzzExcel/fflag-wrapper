@@ -29,7 +29,7 @@
 namespace fs = std::experimental::filesystem;
 #else
 #include <filesystem>
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 #endif
 
 #include <nlohmann/json.hpp>
