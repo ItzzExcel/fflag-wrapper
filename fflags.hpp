@@ -30,7 +30,7 @@
 namespace fs = std::experimental::filesystem;
 #else
 #include <filesystem>
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 #endif
 
 #include <nlohmann/json.hpp>
@@ -49,7 +49,7 @@ namespace FFlags {
             return false;
         }
     }
-    
+
     std::string __GetUserFolderPath() {
         wchar_t path[MAX_PATH];
         if (SHGetFolderPathW(NULL, CSIDL_PROFILE, NULL, 0, path) == S_OK) {
@@ -197,13 +197,13 @@ namespace FFlags {
     bool Delete(std::string FFlag) {
         std::string filePath = __GetRobloxFolder() + "\\ClientAppSettings.json";
 
-        #ifdef AUTOCREATE_JSON_FILE
+#ifdef AUTOCREATE_JSON_FILE
         if (!__DirectoryExists(__GetRobloxFolder()))
             __DoDirectory(__GetRobloxFolder());
 
         if (!__IsFile(filePath))
             __DoFile(filePath, "{}");
-        #endif
+#endif
 
         try {
             std::ifstream inputFile(filePath);
