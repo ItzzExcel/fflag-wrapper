@@ -32,6 +32,9 @@ int main(int argc, char const *argv[])
         printf("DFIntTaskSchedulerTargetFps deleted from ClientAppSettings.json");
     }
 
+    // Change if Bloxstrap is allowed.
+    FFlags::ALLOW_BLOXSTRAP = <bool>;
+
     return 0;
 }
 
