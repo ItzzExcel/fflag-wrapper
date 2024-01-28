@@ -15,7 +15,6 @@
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 
 #define AUTOCREATE_JSON_FILE
-#define ALLOW_BLOXSTRAP
 
 #include <Windows.h>
 #include <iostream>
@@ -38,6 +37,8 @@ namespace fs = std::filesystem;
 using json = nlohmann::json;
 
 namespace FFlags {
+
+    bool ALLOW_BLOXSTRAP = false;
 
     bool __DirectoryExists(const std::string folderPath) {
         DWORD attributes = GetFileAttributesA(folderPath.c_str());
@@ -114,11 +115,13 @@ namespace FFlags {
     }
 
     std::string __GetRobloxFolder() {
-#ifdef ALLOW_BLOXSTRAP
-        std::string bloxstrapPath = __GetUserFolderPath() + "\\AppData\\Local\\Bloxstrap\\Modifications\\ClientSettings";
-        if (__DirectoryExists(bloxstrapPath))
-            return bloxstrapPath;
-#endif
+        
+        if (ALLOW_BLOXSTRAP == true) {
+            std::string bloxstrapPath = __GetUserFolderPath() + "\\AppData\\Local\\Bloxstrap\\Modifications\\ClientSettings";
+            if (__DirectoryExists(bloxstrapPath))
+                return bloxstrapPath;
+        }
+        
         std::string robloxPath = __GetUserFolderPath() + "\\AppData\\Local\\Roblox\\Versions";
 
         if (fs::exists(robloxPath) && fs::is_directory(robloxPath)) {
