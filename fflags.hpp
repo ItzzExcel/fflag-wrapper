@@ -24,11 +24,9 @@
 #include <atlstr.h>
 #include <shlobj.h>
 #include <experimental/filesystem>
-
-namespace fs = std::experimental::filesystem;
-
 #include <nlohmann/json.hpp>
 
+namespace fs = std::experimental::filesystem;
 using json = nlohmann::json;
 
 namespace FFlags {
