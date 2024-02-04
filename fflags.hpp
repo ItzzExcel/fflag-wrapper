@@ -23,14 +23,9 @@
 #include <sstream>
 #include <atlstr.h>
 #include <shlobj.h>
-
-#if __cplusplus < 201703L
 #include <experimental/filesystem>
+
 namespace fs = std::experimental::filesystem;
-#else
-#include <filesystem>
-namespace fs = std::filesystem;
-#endif
 
 #include <nlohmann/json.hpp>
 
@@ -115,13 +110,13 @@ namespace FFlags {
     }
 
     std::string __GetRobloxFolder() {
-        
+
         if (ALLOW_BLOXSTRAP == true) {
             std::string bloxstrapPath = __GetUserFolderPath() + "\\AppData\\Local\\Bloxstrap\\Modifications\\ClientSettings";
             if (__DirectoryExists(bloxstrapPath))
                 return bloxstrapPath;
         }
-        
+
         std::string robloxPath = __GetUserFolderPath() + "\\AppData\\Local\\Roblox\\Versions";
 
         if (fs::exists(robloxPath) && fs::is_directory(robloxPath)) {
