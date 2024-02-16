@@ -19,7 +19,7 @@ int main(int argc, char const *argv[])
 {
     // Read a value from ClientAppSettings.json
     std::string value = FFlags::Read("DFIntTaskSchedulerTargetFps");
-    printf("The value of DFIntTaskSchedulerTargetFps is %s", value);
+    printf("The value of DFIntTaskSchedulerTargetFps is %s", value.c_str());
 
     // Write a value in ClientAppSettings.json
     std::string fps_cap = "999";
