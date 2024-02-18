@@ -17,6 +17,9 @@ The header does not follow best practices, you are absolutely right if you don't
 
 int main(int argc, char const *argv[])
 {
+    // Change if Bloxstrap is allowed.
+    FFlags::ALLOW_BLOXSTRAP = <bool>;
+
     // Read a value from ClientAppSettings.json
     std::string value = FFlags::Read("DFIntTaskSchedulerTargetFps");
     printf("The value of DFIntTaskSchedulerTargetFps is %s", value.c_str());
@@ -31,9 +34,6 @@ int main(int argc, char const *argv[])
     if (FFlags::Delete("DFIntTaskSchedulerTargetFps")) {
         printf("DFIntTaskSchedulerTargetFps deleted from ClientAppSettings.json");
     }
-
-    // Change if Bloxstrap is allowed.
-    FFlags::ALLOW_BLOXSTRAP = <bool>;
 
     return 0;
 }
