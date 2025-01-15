@@ -1,6 +1,6 @@
 # fflag-wrapper
 
-**Shout out to Bitdancer and the entire Hyperion team for soon disabling the manual setting of FFlags, which will make it impossible for many people with low-end computers to play Roblox. 😹**
+**Greetings to Bitdancer and the entire team behind Hyperion for planning the removal and the manual setting of FFlags, which will make it impossible for many people with low-end computers to play Roblox. 😹**
 
 A quite simple Wrapper for Fast Flags.\
 Compatible with Bloxstrap, automatically calculates the game directories.
